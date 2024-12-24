@@ -211,7 +211,6 @@ class ThreeManGame:
             await interaction.followup.send(f"{self.roller.mention}, it's still your turn! Roll again with `/roll`.")
 
 
-
     async def start_game(self):
         if len(self.players) < 2:
             await self.channel.send("You need at least 2 players to start a game of Threeman.")
@@ -232,5 +231,3 @@ class ThreeManGame:
         self.roller = None
 
         await self.channel.send("The game of Threeman has ended. Thanks for playing!")
-
-
