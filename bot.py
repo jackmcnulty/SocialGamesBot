@@ -33,8 +33,6 @@ async def on_ready():
         print(f"Error syncing slash commands: {e}")
 
 
-from typing import List
-
 @tree.command(name="start_game", description="Start a game with up to 10 players.")
 @app_commands.describe(
     game_name="Name of the game to start",
@@ -136,6 +134,11 @@ async def roll(interaction: discord.Interaction):
         await interaction.response.send_message(
             f"The current game ({current_game.name}) does not support rolling dice.", ephemeral=True
         )
+
+
+@tree.command(name="hellosgb", description="Say hello to the bot.")
+async def hellosgb(interaction: discord.Interaction):
+    await interaction.response.send_message("Hello! I am SGB!", ephemeral=True)
 
 
 # Run the bot
