@@ -37,6 +37,18 @@ async def on_ready():
         print(f"Error syncing slash commands: {e}")
 
 
+@bot.event
+async def on_message(message):
+    global current_game
+
+    # Ensure the bot only processes messages in the trivia game channel
+    if current_game and isinstance(current_game, TriviaGame) and message.channel == current_game.channel:
+        await current_game.handle_answer(message)
+
+    # Process other commands
+    await bot.process_commands(message)
+
+
 ### THREEMAN GAME COMMANDS ###
 
 @tree.command(name="start_game", description="Start a game with up to 10 players.")

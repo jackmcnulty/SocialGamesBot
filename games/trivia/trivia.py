@@ -40,16 +40,19 @@ class TriviaGame:
 
 
     async def handle_answer(self, message):
-        # Case when no question is currently being asked
+        """
+        Checks if a user's message matches the correct answer.
+        """
         if not self.current_question:
-            return
+            return  # No question is active
 
-        correct_answer = self.current_question['answer'].lower()
-        if message.content.lower() == correct_answer and message.author in self.players: # Case-insensitive comparison of answers
+        correct_answer = self.current_question['answer'].strip().lower()
+        if message.content.strip().lower() == correct_answer and message.author in self.players:
             self.scores[message.author] += 1
             await self.channel.send(f"{message.author.mention} answered correctly and earns a point!")
-            
-            if self.question_counter % 5 == 0: # Display leaderboard every 5 questions
+
+            # Every 5 questions, show the leaderboard
+            if self.question_counter % 5 == 0:
                 await self.display_leaderboard()
 
             await self.ask_question() # Ask another question, #TODO: want to implement a delay here
