@@ -26,8 +26,14 @@ class TriviaGame:
             return
 
         # Still questions left, choose random from topic and ask
-        self.current_question = random.choice([q for q in self.questions if q not in self.used_questions])
-        self.used_questions.add(self.current_question)
+        available_questions = [q for q in self.questions if q['question'] not in self.used_questions]
+        if not available_questions:
+            await self.channel.send("All questions have been asked! The game is over.")
+            await self.display_leaderboard(final=True)
+            return
+
+        self.current_question = random.choice(available_questions)
+        self.used_questions.add(self.current_question['question'])  # Mark this question as used
         self.question_counter += 1
 
         await self.channel.send(f"Question {self.question_counter}: {self.current_question['question']}")
