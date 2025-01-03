@@ -1,5 +1,7 @@
 import random
 
+import asyncio
+
 from games.trivia.topics import TRIVIA_TOPICS
 
 class TriviaGame:
@@ -54,8 +56,11 @@ class TriviaGame:
             # Every 5 questions, show the leaderboard
             if self.question_counter % 5 == 0:
                 await self.display_leaderboard()
+                await asyncio.sleep(10)
+            else: 
+                await asyncio.sleep(5)
 
-            await self.ask_question() # Ask another question, #TODO: want to implement a delay here
+            await self.ask_question() # Ask another question
 
 
     async def display_leaderboard(self, final=False):

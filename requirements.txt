@@ -1,2 +1,3 @@
 discord.py[no-voice]
 python-dotenv
+asyncio
