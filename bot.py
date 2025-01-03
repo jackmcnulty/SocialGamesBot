@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from dotenv import load_dotenv
+import asyncio
 
 from games import threeman
 from games.trivia.trivia import TriviaGame
@@ -206,6 +207,34 @@ async def start_trivia(
         f"Trivia game started with topic: {topic}! Players: {', '.join([player.mention for player in players])}"
     )
     await current_game.start_game()
+
+
+@tree.command(name="idk", description="Reveal the answer to the current trivia question and move on.")
+async def idk(interaction: discord.Interaction):
+    global current_game
+
+    # Ensure the command is only usable in a trivia game
+    if not current_game or not isinstance(current_game, TriviaGame):
+        await interaction.response.send_message("This command can only be used during an active trivia game.", ephemeral=True)
+        return
+
+    # Ensure the command is used in the correct channel
+    if interaction.channel != current_game.channel:
+        await interaction.response.send_message("This command can only be used in the trivia game channel.", ephemeral=True)
+        return
+
+    # Reveal the answer and move to the next question
+    if current_game.current_question:
+        answer = current_game.current_question['answer']
+        await interaction.response.send_message(f"Nobody knew the answer! The correct answer was: **{answer}**. Moving on...")
+
+        # Add a slight delay for smooth pacing
+        await asyncio.sleep(4)
+
+        # Move to the next question
+        await current_game.ask_question()
+    else:
+        await interaction.response.send_message("No active question to skip.", ephemeral=True)
 
 ### END TRIVIA GAME COMMANDS ###
 
