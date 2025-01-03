@@ -2,8 +2,6 @@ import random
 
 import asyncio
 
-from games.trivia.topics import TRIVIA_TOPICS
-
 class TriviaGame:
     def __init__(self, bot, channel, players, topic, questions):
         self.bot = bot
@@ -17,6 +15,9 @@ class TriviaGame:
         self.question_counter = 0
 
     async def start_game(self):
+        await asyncio.sleep(2)
+        await self.channel.send("Starting trivia game in 5 seconds!")
+        await asyncio.sleep(5)
         await self.ask_question()
 
     async def ask_question(self):
