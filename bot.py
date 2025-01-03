@@ -202,10 +202,10 @@ async def start_trivia(
 
     questions = TRIVIA_TOPICS[topic]
     current_game = TriviaGame(bot, interaction.channel, players, topic, questions)
-    await current_game.start_game()
     await interaction.response.send_message(
         f"Trivia game started with topic: {topic}! Players: {', '.join([player.mention for player in players])}"
     )
+    await current_game.start_game()
 
 ### END TRIVIA GAME COMMANDS ###
 
