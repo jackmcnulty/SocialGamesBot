@@ -15,7 +15,6 @@ class TriviaGame:
         self.question_counter = 0
 
     async def start_game(self):
-        await asyncio.sleep(2)
         await self.channel.send("Starting trivia game in 5 seconds!")
         await asyncio.sleep(5)
         await self.ask_question()
@@ -58,7 +57,7 @@ class TriviaGame:
                 await self.display_leaderboard()
                 await asyncio.sleep(10)
             else: 
-                await asyncio.sleep(5)
+                await asyncio.sleep(4)
 
             await self.ask_question() # Ask another question
 
