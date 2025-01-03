@@ -17,7 +17,6 @@ class TriviaGame:
         self.question_counter = 0
 
     async def start_game(self):
-        await self.channel.send(f"Trivia game started with topic: {self.topic}! Players: {', '.join([player.mention for player in self.players])}")
         await self.ask_question()
 
     async def ask_question(self):
