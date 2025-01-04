@@ -79,14 +79,15 @@ class TriviaGame:
         """
         Reveal the answer to the current question and move on.
         """
-        async with self.lock:  # Prevent race conditions with multiple /idk calls
+        async with self.lock:  # Locking to ensure only one action is processed
+            # Check if the question is active
             if not self.current_question or not self.question_active:
                 await self.channel.send("No active question to skip.")
                 return
 
-            # Reveal the answer
+            # Reveal the answer and disable the current question
+            self.question_active = False  # Disable further actions for this question
             answer = self.current_question['answer']
-            self.question_active = False  # Disable further answers for this question
             await self.channel.send(f"The correct answer was: **{answer}**. Nobody earns a point.")
 
             # Delay before moving to the next question
