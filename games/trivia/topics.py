@@ -317,4 +317,6 @@ TRIVIA_TOPICS = {
 # Populate "all_topics" with questions from all other topics
 for topic, questions in TRIVIA_TOPICS.items():
     if topic != "all_topics":
+        for question in questions:
+            question['topic'] = topic
         TRIVIA_TOPICS["all_topics"].extend(questions)

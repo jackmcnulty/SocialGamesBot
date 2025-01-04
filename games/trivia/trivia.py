@@ -39,7 +39,13 @@ class TriviaGame:
         self.question_counter += 1
         self.question_active = True  # Allow players to answer
 
-        await self.channel.send(f"Question {self.question_counter}: {self.current_question['question']}")
+        # Prepend the topic in bold if 'all_topics' is selected
+        if self.topic == "all_topics":
+            question_text = f"**[{self.current_question['topic'].capitalize()}]** {self.current_question['question']}"
+        else:
+            question_text = self.current_question['question']
+
+        await self.channel.send(f"Question {self.question_counter}: {question_text}")
 
     async def handle_answer(self, message):
         """
