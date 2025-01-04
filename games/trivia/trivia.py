@@ -12,8 +12,8 @@ class TriviaGame:
         self.scores = {player: 0 for player in players}
         self.current_question = None
         self.question_counter = 0
-        self.lock = asyncio.Lock()  # Synchronize actions
-        self.question_active = False  # Indicates if the question is awaiting an answer
+        self.lock = asyncio.Lock()
+        self.question_active = False 
 
     async def start_game(self):
         await self.channel.send("Starting trivia game in 5 seconds!")
@@ -58,9 +58,14 @@ class TriviaGame:
                 # Every 5 questions, show the leaderboard
                 if self.question_counter % 5 == 0:
                     await self.display_leaderboard()
-                    await asyncio.sleep(10)  # Longer delay after leaderboard
+                    await asyncio.sleep(8)  # Longer delay after leaderboard
+                    await self.channel.send("Next question coming up...")
+                    await asyncio.sleep(2)
                 else:
                     await asyncio.sleep(4)  # Shorter delay between regular questions
+                    await self.channel.send("Next question coming up...")
+                    await asyncio.sleep(2)
+
 
                 await self.ask_question()  # Ask the next question
 
@@ -73,12 +78,16 @@ class TriviaGame:
                 await self.channel.send("No active question to skip.")
                 return
 
+            # Reveal the answer
             answer = self.current_question['answer']
             self.question_active = False  # Disable further answers for this question
             await self.channel.send(f"The correct answer was: **{answer}**. Nobody earns a point.")
 
             # Delay before moving to the next question
             await asyncio.sleep(4)
+            # Add a chat countdown before the next question
+            await self.channel.send("Next question coming up...")
+            await asyncio.sleep(2)
             await self.ask_question()
 
     async def display_leaderboard(self, final=False):
