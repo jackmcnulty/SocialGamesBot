@@ -52,9 +52,8 @@ async def on_message(message):
 
 ### THREEMAN GAME COMMANDS ###
 
-@tree.command(name="start_game", description="Start a game with up to 10 players.")
+@tree.command(name="start_threeman", description="Start a game with up to 10 players.")
 @app_commands.describe(
-    game_name="Name of the game to start",
     player1="First player (required)",
     player2="Second player (required)",
     player3="Third player (optional)",
@@ -66,9 +65,8 @@ async def on_message(message):
     player9="Ninth player (optional)",
     player10="Tenth player (optional)"
 )
-async def start_game(
+async def start_threeman(
     interaction: discord.Interaction,
-    game_name: str,
     player1: discord.User,
     player2: discord.User,
     player3: discord.User = None,
@@ -105,15 +103,9 @@ async def start_game(
         )
         return
 
-    if game_name.lower() == 'threeman':
-        current_game = threeman.ThreeManGame(bot, interaction.channel, players)
-    else:
-        await interaction.response.send_message(f"Unknown game: {game_name}.", ephemeral=True)
-        return
-
     await current_game.start_game()
     await interaction.response.send_message(
-        f"Game {game_name} started with players: {', '.join([player.mention for player in players])}!"
+        f"hreeman game started with players: {', '.join([player.mention for player in players])}!"
     )
 
 
