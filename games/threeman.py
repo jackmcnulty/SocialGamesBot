@@ -1,4 +1,5 @@
 import random
+import asyncio
 import discord
 from discord.ext import commands
 
@@ -160,11 +161,18 @@ class ThreeManGame:
             await interaction.followup.send(
                 f"{self.roller.mention} is the Threeman and gets skipped this round. Passing to the next player."
             )
+
+            # Add sleep to reduce jitter
+            await asyncio.sleep(2)
+
             current_index = self.players.index(self.roller)
             next_index = (current_index + 1) % len(self.players)
             self.roller = self.players[next_index]
             await interaction.followup.send(f"It's now {self.roller.mention}'s turn!")
             return
+
+        # Add sleep to reduce jitter
+        await asyncio.sleep(2)
 
         die1, die2 = random.randint(1, 6), random.randint(1, 6)
         total = die1 + die2
@@ -188,6 +196,10 @@ class ThreeManGame:
                 await interaction.followup.send(
                     f"{self.roller.mention} rolled a 3 and is no longer the Threeman! The position is now open."
                 )
+
+                # Add sleep to reduce jitter
+                await asyncio.sleep(2)
+
                 self.threeman = None
                 self.threeman_skipped = False  # Reset skip tracking
                 # Next player rolls for Threeman
