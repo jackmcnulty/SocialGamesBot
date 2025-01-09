@@ -230,6 +230,17 @@ async def idk(interaction: discord.Interaction):
     else:
         await interaction.response.send_message("No active question to skip.", ephemeral=True)
 
+
+@tree.command(name='list_trivia_topics', description="List all available trivia topics.")
+async def list_trivia_topics(interaction: discord.Interaction):
+    # Ensure the command is only usable in the correct channel
+    if interaction.channel.id != GAMES_CHANNEL_ID:
+        await interaction.response.send_message("Please list the trivia topics in the games channel.", ephemeral=True)
+        return
+
+    topics = ", ".join(TRIVIA_TOPICS.keys())
+    await interaction.response.send_message(f"Available trivia topics: {topics}")
+
 ### END TRIVIA GAME COMMANDS ###
 
 
