@@ -102,10 +102,12 @@ async def start_threeman(
             "You need to select at least 2 players to start the game.", ephemeral=True
         )
         return
+    
+    current_game = threeman.ThreeManGame(bot, interaction.channel, players)
 
     await current_game.start_game()
     await interaction.response.send_message(
-        f"hreeman game started with players: {', '.join([player.mention for player in players])}!"
+        f"Threeman game started with players: {', '.join([player.mention for player in players])}!"
     )
 
 
