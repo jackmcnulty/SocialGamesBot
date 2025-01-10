@@ -4,7 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from netscape_cookies import save_cookies
+from netscape_cookies import save_cookies_to_file
 
 
 class YouTubeCookiesManager:
@@ -34,7 +34,7 @@ class YouTubeCookiesManager:
 
             # Save the cookies to a temporary file in Netscape format
             temp_file = tempfile.NamedTemporaryFile(delete=False, mode="w")
-            save_cookies(cookies, temp_file.name)
+            save_cookies_to_file(cookies, temp_file.name)
             temp_file.close()
 
             self.cached_cookies_file = temp_file.name
