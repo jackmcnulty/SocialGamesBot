@@ -4,7 +4,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from netscape_cookies import save_cookies_to_file
 
 
 class YouTubeCookiesManager:
@@ -34,13 +33,39 @@ class YouTubeCookiesManager:
 
             # Save the cookies to a temporary file in Netscape format
             temp_file = tempfile.NamedTemporaryFile(delete=False, mode="w")
-            save_cookies_to_file(cookies, temp_file.name)
+            self.write_netscape_cookies(cookies, temp_file.name)
             temp_file.close()
 
             self.cached_cookies_file = temp_file.name
             self.cookies_valid = True
         finally:
             driver.quit()
+
+
+    @staticmethod
+    def write_netscape_cookies(cookies, file_path):
+        """
+        Converts cookies from Selenium's driver.get_cookies() to Netscape format.
+        Properly omits the expiry field if it's missing.
+        """
+        with open(file_path, "w") as file:
+            file.write("# Netscape HTTP Cookie File\n")
+            for cookie in cookies:
+                domain = cookie.get("domain", "")
+                domain_specified = "TRUE" if domain.startswith(".") else "FALSE"
+                path = cookie.get("path", "/")
+                is_secure = "TRUE" if cookie.get("secure", False) else "FALSE"
+                name = cookie.get("name", "")
+                value = cookie.get("value", "")
+
+                # Include expiry only if it exists
+                if "expiry" in cookie:
+                    expiry = str(cookie["expiry"])
+                    file.write(f"{domain}\t{domain_specified}\t{path}\t{is_secure}\t{expiry}\t{name}\t{value}\n")
+                    print(f"{domain}\t{domain_specified}\t{path}\t{is_secure}\t{expiry}\t{name}\t{value}\n")
+                else:
+                    file.write(f"{domain}\t{domain_specified}\t{path}\t{is_secure}\t{name}\t{value}\n")
+                    print(f"{domain}\t{domain_specified}\t{path}\t{is_secure}\t{name}\t{value}\n")
 
 
     def get_cached_cookies_file(self):

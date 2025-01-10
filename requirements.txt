@@ -7,4 +7,3 @@ pynacl
 ffmpeg
 selenium
 webdriver-manager
-netscape-cookies
