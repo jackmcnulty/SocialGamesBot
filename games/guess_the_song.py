@@ -42,7 +42,15 @@ class GuessTheSongGame:
 
     def _get_game_playlist(self):
         """Get a playlist of songs for the game."""
-        return self.spotify.user_playlist_tracks('spotify', '0R1oMVYDw6vfSaCrRjUvLJ')
+        tracks = []
+        response = self.spotify.user_playlist_tracks('spotify', '0R1oMVYDw6vfSaCrRjUvLJ')
+        tracks.extend(response['items'])
+
+        while response['next']:
+            response = self.spotify.next(response)
+            tracks.extend(response['items'])
+
+        return tracks
 
 
     def _get_youtube_url_from_song(self, song, artists):
@@ -124,7 +132,7 @@ class GuessTheSongGame:
 
         # Get a random song from the playlist
         # FIXME: Handle case when there are more than 100 songs in playlist, and need to get the next page
-        tracks = self.current_playlist['items']
+        tracks = self.current_playlist
 
         songs_and_artists = {}
         for track in tracks:
