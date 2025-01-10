@@ -80,12 +80,7 @@ class GuessTheSongGame:
                 response = ydl.extract_info(f"ytsearch:{query}", download=False)
                 return response['entries'][0]['url']
         except yt_dlp.utils.DownloadError as e:
-            # Try getting cookies again
-            self.cookies_manager.invalidate_cookies()
-            self.cookies_manager.fetch_youtube_cookies()
-            return self._get_youtube_url_from_song(song, artists)
-        finally:
-            raise NotImplementedError("Error fetching YouTube URL.")
+            raise NotImplementedError("Error fetching YouTube URL.") from e
 
 
     async def join_voice_channel(self):
@@ -154,8 +149,6 @@ class GuessTheSongGame:
             await self.text_channel.send("Error: No playlist found.")
             return
 
-        # Get a random song from the playlist
-        # FIXME: Handle case when there are more than 100 songs in playlist, and need to get the next page
         tracks = self.current_playlist
 
         songs_and_artists = {}
