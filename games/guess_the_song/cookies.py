@@ -22,7 +22,7 @@ class YouTubeCookiesManager:
         chrome_options.add_argument('--disable-gpu')
 
         # Start ChromeDriver
-        service = Service(ChromeDriverManager().install())
+        service = Service(ChromeDriverManager(driver_version='131.0.6776.264').install())
         driver = webdriver.Chrome(service=service, options=chrome_options)
 
         try:
