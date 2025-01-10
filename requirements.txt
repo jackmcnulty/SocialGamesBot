@@ -1,3 +1,7 @@
-discord.py[no-voice]
+discord.py
 python-dotenv
 asyncio
+yt_dlp
+spotipy
+pynacl
+ffmpeg

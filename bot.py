@@ -10,11 +10,13 @@ import asyncio
 from games import threeman
 from games.trivia.trivia import TriviaGame
 from games.trivia.topics import TRIVIA_TOPICS
+from games.guess_the_song import GuessTheSongGame
 
 load_dotenv()
 
 TOKEN = os.getenv('DISCORD_APPLICATION_TOKEN')
 GAMES_CHANNEL_ID = int(os.getenv('GAMES_CHANNEL_ID'))
+GAMES_VOICE_CHANNEL_ID = int(os.getenv('GAMES_VOICE_CHANNEL_ID'))
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -243,6 +245,80 @@ async def list_trivia_topics(interaction: discord.Interaction):
 
 ### END TRIVIA GAME COMMANDS ###
 
+
+### GUESS THE SONG GAME COMMANDS ###
+
+@tree.command(name="start_guess_the_song", description="Start a guess the song game.")
+@app_commands.describe(
+    player1="First player (required)",
+    player2="Second player (required)",
+    player3="Third player (optional)",
+    player4="Fourth player (optional)",
+    player5="Fifth player (optional)",
+    player6="Sixth player (optional)",
+    player7="Seventh player (optional)",
+    player8="Eighth player (optional)",
+    player9="Ninth player (optional)",
+    player10="Tenth player (optional)"
+)
+async def start_guess_the_song(
+    interaction: discord.Interaction,
+    player1: discord.User,
+    player2: discord.User,
+    player3: discord.User = None,
+    player4: discord.User = None,
+    player5: discord.User = None,
+    player6: discord.User = None,
+    player7: discord.User = None,
+    player8: discord.User = None,
+    player9: discord.User = None,
+    player10: discord.User = None
+):
+    """
+    Slash command to start a guess the song game.
+    """
+    global current_game
+
+    if interaction.channel.id != GAMES_CHANNEL_ID:
+        await interaction.response.send_message("Please start the game in the games channel.", ephemeral=True)
+        return
+
+    if current_game:
+        await interaction.response.send_message(
+            f"A game is already in progress: {current_game}. Please end it before starting a new one.",
+            ephemeral=True,
+        )
+        return
+
+    # Collect all non-None players into a list
+    players = [player for player in [player1, player2, player3, player4, player5, player6, player7, player8, player9, player10] if player]
+
+    if len(players) < 2:
+        await interaction.response.send_message(
+            "You need at least 2 players to start a guess the song game.", ephemeral=True
+        )
+        return
+
+    # Get guild and voice channel
+    guild = interaction.guild
+    if not guild:
+        await interaction.response.send_message("Error: Could not fetch the guild (server).", ephemeral=True)
+        return
+
+    voice_channel = guild.get_channel(GAMES_VOICE_CHANNEL_ID)
+    if not voice_channel or not isinstance(voice_channel, discord.VoiceChannel):
+        await interaction.response.send_message("Error: The configured voice channel is invalid or not found.", ephemeral=True)
+        return
+
+    # Start the game
+    current_game = GuessTheSongGame(bot, interaction.channel, voice_channel, players)
+    await interaction.response.send_message('Starting a guess the song game in 20 seconds. Be sure to join the Curved Heads voice chat to hear the music.')
+
+    if not await current_game.join_voice_channel():
+        await interaction.followup.send("Error joining the voice channel. Please try again.", ephemeral=True)
+        return
+
+    await current_game.start_game()
 
 ### GENERAL GAME COMMANDS ###
 
