@@ -58,8 +58,8 @@ class YouTubeCookiesManager:
                 name = cookie.get("name", "")
                 value = cookie.get("value", "")
 
-                file.write(f".{domain}\t{is_http_only}\t{path}\t{is_secure}\t{expiry}\t{name}\t{value}\n")
-                print(f".{domain}\t{is_http_only}\t{path}\t{is_secure}\t{expiry}\t{name}\t{value}\n")
+                file.write(f"{domain}\t{is_http_only}\t{path}\t{is_secure}\t{expiry}\t{name}\t{value}\n")
+                print(f"{domain}\t{is_http_only}\t{path}\t{is_secure}\t{expiry}\t{name}\t{value}\n")
 
     def get_cached_cookies_file(self):
         """
