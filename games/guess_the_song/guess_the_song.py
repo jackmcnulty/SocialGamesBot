@@ -8,6 +8,8 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import yt_dlp
 from discord import FFmpegPCMAudio
 
+from games.guess_the_song.cookies import YouTubeCookiesManager
+
 
 SPOTIFY_CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
 SPOTIFY_CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
@@ -32,12 +34,21 @@ class GuessTheSongGame:
         self.song_guessed = False
         self.guessed_artists_correct = []
         self.artists_guessed = False
+        self.cookies_manager = YouTubeCookiesManager()
 
 
     def _initialize_spotify(self):
         """Initialize the Spotify client."""
         client_credentials_manager = SpotifyClientCredentials(client_id=SPOTIFY_CLIENT_ID, client_secret=SPOTIFY_CLIENT_SECRET)
         self.spotify = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+
+
+    def _initialize_youtube_cookies(self):
+        """Initialize the YouTube cookies."""
+        if self.cookies_manager.are_cookies_valid():
+            return self.cookies_manager.get_cached_cookies_file()
+        
+        self.cookies_manager.fetch_youtube_cookies()
 
 
     def _get_game_playlist(self):
@@ -61,9 +72,20 @@ class GuessTheSongGame:
             'quiet': True,
         }
 
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            response = ydl.extract_info(f"ytsearch:{query}", download=False)
-            return response['entries'][0]['url']
+        if self.cookies_manager.are_cookies_valid():
+            ydl_opts['cookiefile'] = self.cookies_manager.get_cached_cookies_file()
+
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                response = ydl.extract_info(f"ytsearch:{query}", download=False)
+                return response['entries'][0]['url']
+        except yt_dlp.utils.DownloadError as e:
+            # Try getting cookies again
+            self.cookies_manager.invalidate_cookies()
+            self.cookies_manager.fetch_youtube_cookies()
+            return self._get_youtube_url_from_song(song, artists)
+        finally:
+            raise NotImplementedError("Error fetching YouTube URL.")
 
 
     async def join_voice_channel(self):
@@ -113,8 +135,9 @@ class GuessTheSongGame:
         # Initialize the Spotify client, if possible
         try:
             self._initialize_spotify()
+            self._initialize_youtube_cookies()
         except Exception as e:
-            await self.text_channel.send(f"Error initializing Spotify client, contact an administrator.")
+            await self.text_channel.send(f"Error initializing Spotify/YouTube client, contact an administrator.")
             return
         
         # Get the game playlist
@@ -141,7 +164,13 @@ class GuessTheSongGame:
         song = random.choice(list(songs_and_artists.keys()))
         artists = songs_and_artists[song]
         self.current_song = song
-        self.current_song_url = self._get_youtube_url_from_song(song, artists)
+
+        try:
+            self.current_song_url = self._get_youtube_url_from_song(song, artists)
+        except NotImplementedError as e:
+            await self.text_channel.send("Error fetching YouTube URL.")
+            return
+
         self.current_artists = artists
 
         if self.voice_client and self.voice_client.is_connected():

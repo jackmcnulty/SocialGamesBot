@@ -5,3 +5,5 @@ yt_dlp
 spotipy
 pynacl
 ffmpeg
+selenium
+webdriver-manager
