@@ -4,6 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from netscape_cookies import save_cookies
 
 
 class YouTubeCookiesManager:
@@ -33,7 +34,7 @@ class YouTubeCookiesManager:
 
             # Save the cookies to a temporary file in Netscape format
             temp_file = tempfile.NamedTemporaryFile(delete=False, mode="w")
-            self.write_netscape_cookies(cookies, temp_file.name)
+            save_cookies(cookies, temp_file.name)
             temp_file.close()
 
             self.cached_cookies_file = temp_file.name
@@ -41,25 +42,6 @@ class YouTubeCookiesManager:
         finally:
             driver.quit()
 
-
-    @staticmethod
-    def write_netscape_cookies(cookies, file_path):
-        """
-        Converts cookies from Selenium's driver.get_cookies() to Netscape format.
-        """
-        with open(file_path, "w") as file:
-            file.write("# Netscape HTTP Cookie File\n")
-            for cookie in cookies:
-                domain = cookie.get("domain", "")
-                is_http_only = "TRUE" if cookie.get("httpOnly", False) else "FALSE"
-                path = cookie.get("path", "/")
-                is_secure = "TRUE" if cookie.get("secure", False) else "FALSE"
-                expiry = str(cookie.get("expiry", 0))
-                name = cookie.get("name", "")
-                value = cookie.get("value", "")
-
-                file.write(f"{domain}\t{is_http_only}\t{path}\t{is_secure}\t{expiry}\t{name}\t{value}\n")
-                print(f"{domain}\t{is_http_only}\t{path}\t{is_secure}\t{expiry}\t{name}\t{value}\n")
 
     def get_cached_cookies_file(self):
         """
