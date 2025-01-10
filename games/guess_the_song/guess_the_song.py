@@ -137,6 +137,7 @@ class GuessTheSongGame:
             self._initialize_spotify()
             self._initialize_youtube_cookies()
         except Exception as e:
+            print(e)
             await self.text_channel.send(f"Error initializing Spotify/YouTube client, contact an administrator.")
             return
         
