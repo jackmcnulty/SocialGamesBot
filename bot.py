@@ -10,7 +10,7 @@ import asyncio
 from games import threeman
 from games.trivia.trivia import TriviaGame
 from games.trivia.topics import TRIVIA_TOPICS
-from games.guess_the_song import GuessTheSongGame
+from games.guess_the_song.guess_the_song import GuessTheSongGame
 
 load_dotenv()
 
