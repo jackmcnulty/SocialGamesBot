@@ -44,8 +44,8 @@ async def on_ready():
 async def on_message(message):
     global current_game
 
-    # Ensure the bot only processes messages in the trivia game channel
-    if current_game and isinstance(current_game, TriviaGame) and message.channel == current_game.channel:
+    # Ensure the bot only processes messages in the games channel
+    if current_game and message.channel.id == GAMES_CHANNEL_ID and message.author != bot.user:
         await current_game.handle_answer(message)
 
     # Process other commands
@@ -205,32 +205,39 @@ async def start_trivia(
     await current_game.start_game()
 
 
-@tree.command(name="idk", description="Reveal the answer to the current trivia question and move on.")
+@tree.command(name="idk", description="Reveal the answer to the current question or song and move on.")
 async def idk(interaction: discord.Interaction):
     global current_game
 
-    # Ensure the command is only usable in a trivia game
-    if not current_game or not isinstance(current_game, TriviaGame):
-        await interaction.response.send_message("This command can only be used during an active trivia game.", ephemeral=True)
+    # Ensure a game is currently running
+    if not current_game:
+        await interaction.response.send_message("No game is currently running.", ephemeral=True)
         return
 
     # Ensure the command is used in the correct channel
-    if interaction.channel != current_game.channel:
-        await interaction.response.send_message("This command can only be used in the trivia game channel.", ephemeral=True)
+    if interaction.channel.id != GAMES_CHANNEL_ID:
+        await interaction.response.send_message("Please use this command in the games channel.", ephemeral=True)
         return
 
-    # Reveal the answer and move to the next question
-    if current_game.current_question:
-        answer = current_game.current_question['answer']
-        await interaction.response.send_message(f"Nobody knew the answer! The correct answer was: **{answer}**. Moving on...")
+    # Check for active trivia game
+    if isinstance(current_game, TriviaGame):
+        if current_game.current_question:
+            answer = current_game.current_question['answer']
+            await interaction.response.send_message(f"Nobody knew the answer! The correct answer was: **{answer}**. Moving on...")
+            await asyncio.sleep(4)
+            await current_game.ask_question()
+        else:
+            await interaction.response.send_message("No active question to skip.", ephemeral=True)
+        return
 
-        # Add a slight delay for smooth pacing
-        await asyncio.sleep(4)
+    # Check for active guess the song game
+    if isinstance(current_game, GuessTheSongGame):
+        await interaction.response.send_message("Revealing the current song and artists...")
+        await current_game.reveal_answer()
+        return
 
-        # Move to the next question
-        await current_game.ask_question()
-    else:
-        await interaction.response.send_message("No active question to skip.", ephemeral=True)
+    # If the command is invoked in an unsupported game
+    await interaction.response.send_message("This command can only be used during specific games.", ephemeral=True)
 
 
 @tree.command(name='list_trivia_topics', description="List all available trivia topics.")
