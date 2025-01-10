@@ -279,3 +279,4 @@ class GuessTheSongGame:
         await self.display_leaderboard(final=True)
         await self.stop_song()
         await self.leave_voice_channel()
+        self.cookies_manager.invalidate_cookies()
