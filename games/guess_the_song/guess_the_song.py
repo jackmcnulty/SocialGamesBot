@@ -34,21 +34,12 @@ class GuessTheSongGame:
         self.song_guessed = False
         self.guessed_artists_correct = []
         self.artists_guessed = False
-        self.cookies_manager = YouTubeCookiesManager()
 
 
     def _initialize_spotify(self):
         """Initialize the Spotify client."""
         client_credentials_manager = SpotifyClientCredentials(client_id=SPOTIFY_CLIENT_ID, client_secret=SPOTIFY_CLIENT_SECRET)
         self.spotify = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
-
-    # def _initialize_youtube_cookies(self):
-    #     """Initialize the YouTube cookies."""
-    #     if self.cookies_manager.are_cookies_valid():
-    #         return self.cookies_manager.get_cached_cookies_file()
-        
-    #     self.cookies_manager.fetch_youtube_cookies()
 
 
     def _get_game_playlist(self):
@@ -70,13 +61,7 @@ class GuessTheSongGame:
             'format': 'best',
             'noplaylist': True,
             'quiet': True,
-            'cachedir': False,
-            'username': os.getenv('YOUTUBE_USERNAME'),
-            'password': os.getenv('YOUTUBE_PASSWORD')
         }
-
-        # if self.cookies_manager.are_cookies_valid():
-            # ydl_opts['cookiefile'] = self.cookies_manager.get_cached_cookies_file()
 
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -165,7 +150,7 @@ class GuessTheSongGame:
         try:
             self.current_song_url = self._get_youtube_url_from_song(song, artists)
         except NotImplementedError as e:
-            await self.text_channel.send("Error fetching YouTube URL.")
+            await self.text_channel.send("Unfortunately YouTube is very aggressive with their anti-bot campaign. Please ask the bot administrator to play. The game must be locally host.")
             return
 
         self.current_artists = artists
@@ -275,4 +260,3 @@ class GuessTheSongGame:
         await self.display_leaderboard(final=True)
         await self.stop_song()
         await self.leave_voice_channel()
-        # self.cookies_manager.invalidate_cookies()
