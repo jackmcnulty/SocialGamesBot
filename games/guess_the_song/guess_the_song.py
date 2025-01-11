@@ -148,7 +148,7 @@ class GuessTheSongGame:
         try:
             self.current_song_url = self._get_youtube_url_from_song(song, artists)
         except NotImplementedError as e:
-            await self.text_channel.send("Unfortunately YouTube is very aggressive with their anti-bot campaign. Please ask the bot administrator to play. The game must be locally host.")
+            await self.text_channel.send("Unfortunately YouTube is very aggressive with their anti-bot campaign. Please ask the bot administrator to be able to play. The game must be locally hosted.")
             return
 
         self.current_artists = artists
