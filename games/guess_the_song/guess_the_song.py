@@ -70,6 +70,7 @@ class GuessTheSongGame:
             'format': 'best',
             'noplaylist': True,
             'quiet': True,
+            'cachedir': False
         }
 
         if self.cookies_manager.are_cookies_valid():

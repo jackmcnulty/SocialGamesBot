@@ -26,7 +26,7 @@ class YouTubeCookiesManager:
         driver = webdriver.Chrome(service=service, options=chrome_options)
 
         try:
-            driver.get('https://www.youtube.com')
+            driver.get('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
             driver.implicitly_wait(10)
 
             # Fetch the cookies
