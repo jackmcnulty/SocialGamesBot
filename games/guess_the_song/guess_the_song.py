@@ -43,12 +43,12 @@ class GuessTheSongGame:
         self.spotify = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
 
-    def _initialize_youtube_cookies(self):
-        """Initialize the YouTube cookies."""
-        if self.cookies_manager.are_cookies_valid():
-            return self.cookies_manager.get_cached_cookies_file()
+    # def _initialize_youtube_cookies(self):
+    #     """Initialize the YouTube cookies."""
+    #     if self.cookies_manager.are_cookies_valid():
+    #         return self.cookies_manager.get_cached_cookies_file()
         
-        self.cookies_manager.fetch_youtube_cookies()
+    #     self.cookies_manager.fetch_youtube_cookies()
 
 
     def _get_game_playlist(self):
@@ -70,11 +70,13 @@ class GuessTheSongGame:
             'format': 'best',
             'noplaylist': True,
             'quiet': True,
-            'cachedir': False
+            'cachedir': False,
+            'username': os.getenv('YOUTUBE_USERNAME'),
+            'password': os.getenv('YOUTUBE_PASSWORD')
         }
 
-        if self.cookies_manager.are_cookies_valid():
-            ydl_opts['cookiefile'] = self.cookies_manager.get_cached_cookies_file()
+        # if self.cookies_manager.are_cookies_valid():
+            # ydl_opts['cookiefile'] = self.cookies_manager.get_cached_cookies_file()
 
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -131,7 +133,7 @@ class GuessTheSongGame:
         # Initialize the Spotify client, if possible
         try:
             self._initialize_spotify()
-            self._initialize_youtube_cookies()
+            # self._initialize_youtube_cookies()
         except Exception as e:
             print(e)
             await self.text_channel.send(f"Error initializing Spotify/YouTube client, contact an administrator.")
@@ -273,4 +275,4 @@ class GuessTheSongGame:
         await self.display_leaderboard(final=True)
         await self.stop_song()
         await self.leave_voice_channel()
-        self.cookies_manager.invalidate_cookies()
+        # self.cookies_manager.invalidate_cookies()
