@@ -27,7 +27,8 @@ class YouTubeCookiesManager:
 
         try:
             driver.get('https://www.youtube.com')
-            
+            driver.implicitly_wait(10)
+
             # Fetch the cookies
             cookies = driver.get_cookies()
 
@@ -46,7 +47,7 @@ class YouTubeCookiesManager:
     def write_netscape_cookies(cookies, file_path):
         """
         Converts cookies from Selenium's driver.get_cookies() to Netscape format.
-        Properly omits the expiry field if it's missing.
+        Always includes 7 fields by using 0 for session cookies.
         """
         with open(file_path, "w") as file:
             file.write("# Netscape HTTP Cookie File\n")
@@ -55,18 +56,12 @@ class YouTubeCookiesManager:
                 domain_specified = "TRUE" if domain.startswith(".") else "FALSE"
                 path = cookie.get("path", "/")
                 is_secure = "TRUE" if cookie.get("secure", False) else "FALSE"
+                expiry = str(cookie.get("expiry", 0))  # Default to 0 for session cookies
                 name = cookie.get("name", "")
                 value = cookie.get("value", "")
 
-                # Include expiry only if it exists
-                if "expiry" in cookie:
-                    expiry = str(cookie["expiry"])
-                    file.write(f"{domain}\t{domain_specified}\t{path}\t{is_secure}\t{expiry}\t{name}\t{value}\n")
-                    print(f"{domain}\t{domain_specified}\t{path}\t{is_secure}\t{expiry}\t{name}\t{value}\n")
-                else:
-                    file.write(f"{domain}\t{domain_specified}\t{path}\t{is_secure}\t{name}\t{value}\n")
-                    print(f"{domain}\t{domain_specified}\t{path}\t{is_secure}\t{name}\t{value}\n")
-
+                file.write(f"{domain}\t{domain_specified}\t{path}\t{is_secure}\t{expiry}\t{name}\t{value}\n")
+                print(f"{domain}\t{domain_specified}\t{path}\t{is_secure}\t{expiry}\t{name}\t{value}\n")
 
     def get_cached_cookies_file(self):
         """
