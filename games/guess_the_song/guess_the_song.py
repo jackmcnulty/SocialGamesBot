@@ -119,6 +119,7 @@ class GuessTheSongGame:
         except Exception as e:
             print(e)
             await self.text_channel.send(f"Error initializing Spotify/YouTube client, contact an administrator.")
+            await self.end_game()
             return
         
         # Get the game playlist
