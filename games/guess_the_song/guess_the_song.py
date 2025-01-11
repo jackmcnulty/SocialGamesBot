@@ -8,8 +8,6 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import yt_dlp
 from discord import FFmpegPCMAudio
 
-from games.guess_the_song.cookies import YouTubeCookiesManager
-
 
 SPOTIFY_CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
 SPOTIFY_CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
@@ -118,7 +116,6 @@ class GuessTheSongGame:
         # Initialize the Spotify client, if possible
         try:
             self._initialize_spotify()
-            # self._initialize_youtube_cookies()
         except Exception as e:
             print(e)
             await self.text_channel.send(f"Error initializing Spotify/YouTube client, contact an administrator.")
