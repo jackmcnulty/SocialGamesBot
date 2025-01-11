@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import random
 
@@ -177,6 +178,11 @@ class GuessTheSongGame:
             # Check if the message content matches the correct song or artist until all answers are found
             user_guess = message.content.lower()
             user = message.author
+
+            def strip_parentheses(text):
+                return re.sub(r"\s*\(.*?\)", "", text).strip()
+
+            correct_song = strip_parentheses(self.current_song.lower())
 
             # Case when the user guesses the song
             if not self.song_guessed and user_guess == correct_song:
